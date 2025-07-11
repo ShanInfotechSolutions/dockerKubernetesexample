@@ -29,16 +29,18 @@ pipeline {
         }
 
         stage('Docker Build & Push') {
-            steps {
-                echo "Building and pushing Docker image..."
-                sh """
-                    docker build -t ${IMAGE_NAME}:${TAG} ${BUILD_CONTEXT}
-                    echo 'Pushing Docker image to Docker Hub...'
-                    docker login -u shaninfotech -p <YOUR_PAT>  # Replace with Jenkins credential logic
-                    docker push ${IMAGE_NAME}:${TAG}
-                """
+    steps {
+        echo "Building and pushing Docker image..."
+        script {
+            def dockerImage = docker.build("${IMAGE_NAME}:${TAG}", "${BUILD_CONTEXT}")
+
+            docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
+                dockerImage.push()
             }
         }
+    }
+}
+
 
         stage('Deploy to Kubernetes') {
             steps {
