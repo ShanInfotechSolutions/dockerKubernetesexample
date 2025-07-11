@@ -2,12 +2,13 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven_3.9'  // Ensure Maven is configured in Jenkins global tools
+        maven 'Maven_3.9'  // Make sure Maven is configured in Jenkins Global Tools
     }
 
     environment {
-        IMAGE_NAME = 'shaninfotech/replica-safe-app'
+        IMAGE_NAME = 'shaninfotech/docker-kubernetes-example'
         TAG = 'latest'
+        BUILD_CONTEXT = '/Users/shanbond/java8examples/JenkinsDockerKubernetesProject/DockerKubernetesExample'
     }
 
     stages {
@@ -15,14 +16,14 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo "Checking out source code..."
-                git 'https://github.com/YOUR_GITHUB_ACCOUNT/ReplicaSafeApp.git'
+                git 'https://github.com/ShanInfotechSolutions/dockerKubernetesexample.git'
             }
         }
 
         stage('Build JAR with Maven') {
             steps {
-                echo "Building JAR file..."
-                sh 'mvn clean package'
+                echo "Building Maven JAR..."
+                sh "cd ${BUILD_CONTEXT} && mvn clean package"
             }
         }
 
@@ -30,9 +31,9 @@ pipeline {
             steps {
                 script {
                     echo "Building Docker image: ${IMAGE_NAME}:${TAG}"
-                    def dockerImage = docker.build("${IMAGE_NAME}:${TAG}")
+                    def dockerImage = docker.build("${IMAGE_NAME}:${TAG}", "${BUILD_CONTEXT}")
 
-                    echo "Logging in and pushing to Docker Hub..."
+                    echo "Pushing Docker image to Docker Hub..."
                     docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
                         dockerImage.push()
                     }
@@ -44,9 +45,9 @@ pipeline {
             steps {
                 echo "Applying Kubernetes manifests..."
                 sh '''
-                  kubectl apply -f k8s/configmap.yaml
-                  kubectl apply -f k8s/deployment.yaml
-                  kubectl apply -f k8s/service.yaml
+                  kubectl apply -f /Users/shanbond/java8examples/JenkinsDockerKubernetesProject/DockerKubernetesExample/k8s/configmap.yaml
+                  kubectl apply -f /Users/shanbond/java8examples/JenkinsDockerKubernetesProject/DockerKubernetesExample/k8s/deployment.yaml
+                  kubectl apply -f /Users/shanbond/java8examples/JenkinsDockerKubernetesProject/DockerKubernetesExample/k8s/service.yaml
                 '''
             }
         }
@@ -54,10 +55,10 @@ pipeline {
 
     post {
         success {
-            echo "CI/CD pipeline completed successfully. App deployed!"
+            echo "App successfully deployed to Kubernetes!"
         }
         failure {
-            echo "CI/CD pipeline failed. Check logs and troubleshoot."
+            echo "Pipeline failed. Check above logs for issues."
         }
     }
 }
