@@ -14,10 +14,12 @@ pipeline {
     stages {
 
         stage('Checkout') {
-            steps {
-                echo "Checking out source code..."
-                git 'https://github.com/ShanInfotechSolutions/dockerKubernetesexample.git'
-            }
+    steps {
+        echo "Checking out source code..."
+        git branch: 'main', url: 'https://github.com/ShanInfotechSolutions/dockerKubernetesexample.git'
+    }
+}
+
         }
 
         stage('Build JAR with Maven') {
