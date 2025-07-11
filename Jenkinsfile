@@ -20,7 +20,6 @@ pipeline {
     }
 }
 
-        }
 
         stage('Build JAR with Maven') {
             steps {
