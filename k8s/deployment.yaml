@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docker-kubernetes-example
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: docker-kubernetes-example
+  template:
+    metadata:
+      labels:
+        app: docker-kubernetes-example
+    spec:
+      containers:
+      - name: replica-safe-container
+        image: shaninfotech/docker-kubernetes-example:latest
+        ports:
+        - containerPort: 9090
+        env:
+        - name: INSTANCE_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: APP_GREETING
+          valueFrom:
+            configMapKeyRef:
+              name: replica-config
+              key: APP_GREETING

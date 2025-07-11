@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: replica-config
+data:
+  APP_GREETING: "Hello from Shan Infotech!"
+
