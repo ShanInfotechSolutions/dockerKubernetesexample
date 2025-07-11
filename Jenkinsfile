@@ -2,10 +2,11 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven 3.9.0'  // Make sure Maven is configured in Jenkins Global Tools
+        maven 'Maven 3.9.0'  // Ensure this is configured in Jenkins -> Global Tool Configuration
     }
 
     environment {
+        PATH = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
         IMAGE_NAME = 'shaninfotech/docker-kubernetes-example'
         TAG = 'latest'
         BUILD_CONTEXT = '/Users/shanbond/java8examples/JenkinsDockerKubernetesProject/DockerKubernetesExample'
@@ -14,12 +15,11 @@ pipeline {
     stages {
 
         stage('Checkout') {
-    steps {
-        echo "Checking out source code..."
-        git branch: 'main', url: 'https://github.com/ShanInfotechSolutions/dockerKubernetesexample.git'
-    }
-}
-
+            steps {
+                echo "Checking out source code..."
+                git branch: 'main', url: 'https://github.com/ShanInfotechSolutions/dockerKubernetesexample.git'
+            }
+        }
 
         stage('Build JAR with Maven') {
             steps {
