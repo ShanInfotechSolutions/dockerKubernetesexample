@@ -27,7 +27,7 @@ public class JDBCApp {
         logger.info("Greeting: {}", greeting);
 
         try (Connection conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
-            logger.info("✅ Connected to the database");
+            logger.info("Connected to the database");
 
             String createTableSQL = "CREATE TABLE IF NOT EXISTS instance_log ("
                                   + "id INT AUTO_INCREMENT PRIMARY KEY, "
