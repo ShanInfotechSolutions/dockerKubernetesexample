@@ -29,7 +29,7 @@ public class JDBCApp {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
             logger.info("Connected to the database");
 
-            String createTableSQL = "CREATE TABLE IF NOT EXISTS instance_log ("
+            String createTableSQL = "CREATE TABLE  instance_log ("
                                   + "id INT AUTO_INCREMENT PRIMARY KEY, "
                                   + "instance_id VARCHAR(100), "
                                   + "greeting TEXT, "
@@ -43,7 +43,7 @@ public class JDBCApp {
                 pstmt.setString(1, instanceId);
                 pstmt.setString(2, greeting);
                 pstmt.executeUpdate();
-                logger.info("✅ Logged instance data");
+                logger.info("Logged instance data");
             }
 
             logger.info("📋 Current log entries:");
