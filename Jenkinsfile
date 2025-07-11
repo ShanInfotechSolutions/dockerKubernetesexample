@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven 3.9.0'  // Ensure this is configured in Jenkins -> Global Tool Configuration
+        maven 'Maven 3.9.0'
     }
 
     environment {
@@ -30,36 +30,34 @@ pipeline {
 
         stage('Docker Build & Push') {
             steps {
-                script {
-                    echo "Building Docker image: ${IMAGE_NAME}:${TAG}"
-                    def dockerImage = docker.build("${IMAGE_NAME}:${TAG}", "${BUILD_CONTEXT}")
-
-                    echo "Pushing Docker image to Docker Hub..."
-                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
-                        dockerImage.push()
-                    }
-                }
+                echo "Building and pushing Docker image..."
+                sh """
+                    docker build -t ${IMAGE_NAME}:${TAG} ${BUILD_CONTEXT}
+                    echo 'Pushing Docker image to Docker Hub...'
+                    docker login -u shaninfotech -p <YOUR_PAT>  # Replace with Jenkins credential logic
+                    docker push ${IMAGE_NAME}:${TAG}
+                """
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
                 echo "Applying Kubernetes manifests..."
-                sh '''
-                  kubectl apply -f /Users/shanbond/java8examples/JenkinsDockerKubernetesProject/DockerKubernetesExample/k8s/configmap.yaml
-                  kubectl apply -f /Users/shanbond/java8examples/JenkinsDockerKubernetesProject/DockerKubernetesExample/k8s/deployment.yaml
-                  kubectl apply -f /Users/shanbond/java8examples/JenkinsDockerKubernetesProject/DockerKubernetesExample/k8s/service.yaml
-                '''
+                sh """
+                  kubectl apply -f ${BUILD_CONTEXT}/k8s/configmap.yaml
+                  kubectl apply -f ${BUILD_CONTEXT}/k8s/deployment.yaml
+                  kubectl apply -f ${BUILD_CONTEXT}/k8s/service.yaml
+                """
             }
         }
     }
 
     post {
         success {
-            echo "App successfully deployed to Kubernetes!"
+            echo "✅ App successfully deployed to Kubernetes!"
         }
         failure {
-            echo "Pipeline failed. Check above logs for issues."
+            echo "❌ Pipeline failed. Check above logs for issues."
         }
     }
 }
