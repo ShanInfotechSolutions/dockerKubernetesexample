@@ -54,10 +54,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ App successfully deployed to Kubernetes!"
+            echo " App successfully deployed to Kubernetes!"
         }
         failure {
-            echo "❌ Pipeline failed. Check above logs for issues."
+            echo " Pipeline failed. Check above logs for issues."
         }
     }
 }
